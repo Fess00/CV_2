@@ -9,6 +9,7 @@ Mat conv(Mat& img, Mat& filt) {
 	int tmpXF = filt.rows;
 	int tmpYF = filt.cols;
 	int tmpColorCountF = 3;
+	int tmpFNum = 9;
 	int layerF = 5;
 	int temp = 1;
 	int tmpX = img.rows;
@@ -18,16 +19,23 @@ Mat conv(Mat& img, Mat& filt) {
 	int Y = (tmpY - tmpYF) / temp + 1;
 	Mat tmp = Mat::zeros(X, Y, CV_32FC3);
 
-	for (int i = 0; i < layerF; i++)
-		for (int x = 0; x < X; x++)
-			for (int y = 0; y < Y; y++) {
+	for (int i = 0; i < tmpFNum; ++i) {
+		for (int h = 0; h < X; ++h) {
+			for (int w = 0; w < Y; ++w) {
 				Vec3b sum = 0;
-				for (int k = 0; k < tmpXF; k++)
-					for (int l = 0; l < tmpYF; l++)
-						for (int m = 0; m < tmpColorCountF; m++)
-							sum = sum + img.ptr<Vec3b>(x * temp + k, y * temp + l)[m] * filt.ptr<Vec3b>(k, l)[m][i];
-				tmp.ptr<Vec3b>(x, y)[i] = sum;
+				for (int y = 0; y < tmpXF; ++y) {
+					for (int x = 0; x < tmpYF; ++x) {
+						for (int c = 0; c < tmpColorCountF; ++c) {
+							sum += img.ptr<Vec3b>(h * temp + y, w * temp + x)[c] *
+								filt.ptr<Vec3b>(y, x)[c][i];
+						}
+					}
+				}
+				tmp.ptr<Vec3b>(h, w)[i] = sum;
 			}
+		}
+	}
+	
 	imshow("conv", tmp);
 	return tmp;
 }
