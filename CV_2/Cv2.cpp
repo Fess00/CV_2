@@ -2,11 +2,11 @@
 #include <opencv2/opencv.hpp>
 #include <random>
 
-using namespace std;
 using namespace cv;
+using namespace std;
 
 Mat conv(Mat& img) {
-	Mat fil_1 = (Mat_<int>(3, 3) << 4, 1, 4, 1,2, 3, 1, 2, 4);
+	Mat fil_1 = (Mat_<int>(3, 3) << 4, 1, 4, 1, 2, 3, 1, 2, 4);
 
 	int step = 1;
 	int channels = 9, num = 3; 	                      //channels - это M
@@ -22,7 +22,7 @@ Mat conv(Mat& img) {
 		{
 			for (int y = 0; y < F; ++y)			   //Ўирина выходного изображени€
 			{
-				Vec3f B = 0;
+				Vec3i B = 0;
 
 				for (int i = 0; i < fil_1.rows; ++i)
 				{
@@ -30,11 +30,11 @@ Mat conv(Mat& img) {
 					{
 						for (int k = 0; k < num; k++)
 						{
-							B += img.ptr<Vec3f>(x * step + i, y * step + j)[k] * fil_1.ptr<Vec3f>(i, j)[m][k];
+							B += img.ptr<Vec3i>(x * step + i, y * step + j)[k] * fil_1.ptr<Vec3i>(i, j)[m][k];
 						}
 					}
 				}
-				Out.ptr<Vec3f>(x, y)[m] = B;
+				Out.ptr<Vec3i>(x, y)[m] = B;
 			}
 		}
 
@@ -57,7 +57,7 @@ Mat maxPooling(Mat& img) {
 			for (int k = 0; k < 2; k++)
 				for (int l = 0; l < 2; l++)
 					for (int m = 0; m < 3; m++)
-						tmp.ptr<Vec3f>(i, j)[m] = max(img.at<Vec3f>(i * 2 + k, j * 2 + l)[m], tmp.at<Vec3f>(i, j)[m]);
+						tmp.ptr<Vec3i>(i, j)[m] = max(img.at<Vec3i>(i * 2 + k, j * 2 + l)[m], tmp.at<Vec3i>(i, j)[m]);
 
 	imshow("maxPooling", tmp);
 	return tmp;
@@ -65,9 +65,9 @@ Mat maxPooling(Mat& img) {
 
 Mat softMax(Mat& img) {
 	Mat tmp;
-	float max = 0.0;
-	float sum = 0.0;
-	max = *max_element(img.begin<float>(), img.end<float>());
+	int max = 0.0;
+	int sum = 0.0;
+	max = *max_element(img.begin<int>(), img.end<int>());
 	cv::exp((img - max), tmp);
 	sum = cv::sum(tmp)[0];
 	tmp /= sum;
